@@ -4,8 +4,7 @@
   "name": "Node.js",
   // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
   "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
-  "remoteEnv": {
-  },
+  "remoteEnv": {},
   "customizations": {
     "vscode": {
       "extensions": [
@@ -27,8 +26,8 @@
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // "forwardPorts": [],
 
-  // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "yarn install",
+  // Use 'postCregateCommand' to run commands after the container is created.
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y openjdk-17-jdk && sudo apt-get clean && yarn install && yarn global add firebase-tools"
 
   // Configure tool-specific properties.
   // "customizations": {},
