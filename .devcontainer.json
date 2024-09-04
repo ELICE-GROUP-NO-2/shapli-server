@@ -24,7 +24,7 @@
   // "features": {},
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [4500, 5001, 8080, 9150],
+  "forwardPorts": [4500, 5001, 8080, 9150, 4501],
 
   // Use 'postCregateCommand' to run commands after the container is created.
   "postCreateCommand": "sudo apt-get update && sudo apt-get install -y openjdk-22-jdk && sudo apt-get clean && yarn install && yarn global add firebase-tools"
