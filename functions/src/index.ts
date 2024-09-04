@@ -1,45 +1,43 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * import {onCall} from "firebase-functions/v2/https";
- * import {onDocumentWritten} from "firebase-functions/v2/firestore";
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
-
-// Start writing functions
-// https://firebase.google.com/docs/functions/typescript
-
-// export const helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
-
 // The Cloud Functions for Firebase SDK to create Cloud Functions and triggers.
 import { onRequest } from "firebase-functions/v2/https";
-import { onDocumentCreated } from "firebase-functions/v2/firestore";
-import { log } from "firebase-functions/logger";
+// import {onDocumentCreated} from "firebase-functions/v2/firestore";
+// import {log} from "firebase-functions/logger";
 
 // The Firebase Admin SDK to access Firestore.
 import { initializeApp } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
+// import {getFirestore} from "firebase-admin/firestore";
+
+import express from "express";
+import cors from "cors";
+import postsRouter, { POSTS_ROUTE } from "./routes/posts";
+import helloRouter, { HELLO_ROUTE } from "./routes/hello";
+import morgan from "morgan";
 
 initializeApp();
 
-exports.addmessage = onRequest(async (req, res) => {
-  const original = req.query.text;
-  const writeResult = await getFirestore().collection("messages").add({
-    original: original,
-  });
-  res.json({ result: `Message with ID: ${writeResult.id} added.` });
+const app = express();
+
+const SEOUL_REGION = "asia-northeast3";
+
+const corsConfig = {
+  origin: "*",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+};
+
+app.use(morgan("dev"));
+app.use(express.json());
+app.use(cors(corsConfig));
+app.get("/", (_, res) => {
+  res.json({ status: "OK" });
 });
+app.use(HELLO_ROUTE, helloRouter);
+app.use(POSTS_ROUTE, postsRouter);
 
-exports.makeuppercase = onDocumentCreated("/messages/{documentId}", (event) => {
-  const original = event.data?.data().original;
-
-  log("Uppercasing", event.params.documentId, original);
-
-  const uppercase = original.toUpperCase();
-
-  return event.data?.ref.set({ uppercase }, { merge: true });
-});
+export const api = onRequest(
+  {
+    region: SEOUL_REGION,
+  },
+  app
+);
